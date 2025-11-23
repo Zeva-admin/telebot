@@ -25,7 +25,7 @@ from telegram.ext import (
 
 # === Конфигурация ===
 TELEGRAM_TOKEN = "8316451286:AAHcqTvt4pJ_o0bvmbVqusmo58M3Qgd5n4c"
-OPENROUTER_API_KEY = "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"
+OPENROUTER_API_KEY = "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"
 BOT_NAME = "Gugapiti"
 
 DEFAULT_MODEL = "openai/gpt-5-pro"
@@ -615,3 +615,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
