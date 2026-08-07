@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тарифы - VPN Shop</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <a href="/" class="nav-logo">
+                    <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M16 2L4 8V24L16 30L28 24V8L16 2Z" stroke="currentColor" stroke-width="2" fill="none"/>
+                        <path d="M16 6L8 10V22L16 26L24 22V10L16 6Z" fill="currentColor" opacity="0.3"/>
+                        <path d="M12 14L16 18L20 14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M16 18V24" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                    VPN Shop
+                </a>
+                
+                <ul class="nav-links">
+                    <li><a href="/" class="nav-link">Главная</a></li>
+                    <li class="auth-logged-out"><a href="/login" class="nav-link">Вход</a></li>
+                    <li class="auth-logged-out"><a href="/register" class="btn btn-primary nav-btn">Регистрация</a></li>
+                    <li class="auth-logged-in"><a href="/dashboard" class="nav-link">Кабинет</a></li>
+                    <li class="auth-logged-in"><a href="#" onclick="Auth.logout(); return false;" class="nav-link">Выход</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Plans Section -->
+    <section class="section section-alt">
+        <div class="container">
+            <h1 class="text-center mb-1">Тарифные планы</h1>
+            <p class="text-center text-muted mb-2" style="max-width: 600px; margin-left: auto; margin-right: auto;">
+                Выберите подходящий план для ваших задач. Все тарифы включают полную защиту и неограниченный трафик.
+            </p>
+            
+            <div class="grid grid-4" id="plans-container">
+                <div class="card card-pricing">
+                    <div class="card-body">
+                        <div class="spinner"></div>
+                        <p class="text-muted">Загрузка тарифов...</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-2">
+                <p class="text-muted">Нужна помощь с выбором?</p>
+                <a href="#" class="btn btn-outline">Связаться с поддержкой</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="section">
+        <div class="container" style="max-width: 800px;">
+            <h2 class="text-center mb-2">Частые вопросы</h2>
+            
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                <details class="card" style="cursor: pointer;">
+                    <summary style="padding: 1rem; font-weight: 500;">Как быстро активируется подписка?</summary>
+                    <div style="padding: 0 1rem 1rem; color: var(--color-text-light);">
+                        Подписка активируется мгновенно после подтверждения оплаты. Вы сразу получите доступ к конфигурации VPN.
+                    </div>
+                </details>
+                
+                <details class="card" style="cursor: pointer;">
+                    <summary style="padding: 1rem; font-weight: 500;">Можно ли использовать на нескольких устройствах?</summary>
+                    <div style="padding: 0 1rem 1rem; color: var(--color-text-light);">
+                        Да, количество устройств зависит от выбранного тарифа. Вы можете использовать VPN одновременно на всех разрешённых устройствах.
+                    </div>
+                </details>
+                
+                <details class="card" style="cursor: pointer;">
+                    <summary style="padding: 1rem; font-weight: 500;">Есть ли возврат средств?</summary>
+                    <div style="padding: 0 1rem 1rem; color: var(--color-text-light);">
+                        Мы предоставляем 7 дней гарантии возврата средств, если сервис вам не подойдёт по каким-либо причинам.
+                    </div>
+                </details>
+                
+                <details class="card" style="cursor: pointer;">
+                    <summary style="padding: 1rem; font-weight: 500;">Какие протоколы используются?</summary>
+                    <div style="padding: 0 1rem 1rem; color: var(--color-text-light);">
+                        Мы используем современные протоколы WireGuard и OpenVPN с надёжным шифрованием AES-256.
+                    </div>
+                </details>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <p>&copy; 2024 VPN Shop. Все права защищены.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/static/js/app.js"></script>
+    <script>
+        async function loadPlans() {
+            try {
+                const response = await API.plans.getAll();
+                const container = document.getElementById('plans-container');
+                
+                if (response.data && response.data.plans) {
+                    container.innerHTML = response.data.plans.map(plan => `
+                        <div class="card card-pricing ${plan.is_popular ? 'popular' : ''}">
+                            <div class="card-body">
+                                <h3 class="card-title">${plan.name}</h3>
+                                <p class="text-muted" style="font-size: 0.875rem; margin-top: 0.5rem; min-height: 40px;">${plan.description || ''}</p>
+                                <div class="price">
+                                    ${UI.formatPrice(plan.price)}
+                                    <span class="price-period">/ ${plan.duration_months} мес.</span>
+                                </div>
+                                <ul class="price-features">
+                                    <li>
+                                        <svg viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                        </svg>
+                                        ${plan.max_devices} устройств
+                                    </li>
+                                    <li>
+                                        <svg viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                        </svg>
+                                        ${plan.speed_limit_mbps ? plan.speed_limit_mbps + ' Мбит/с' : 'Безлимитная скорость'}
+                                    </li>
+                                    <li>
+                                        <svg viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                        </svg>
+                                        ${plan.traffic_limit_gb ? plan.traffic_limit_gb + ' ГБ' : 'Безлимитный трафик'}
+                                    </li>
+                                </ul>
+                                <a href="/register" class="btn btn-primary btn-block">Выбрать план</a>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('Ошибка загрузки планов:', error);
+            }
+        }
+        
+        loadPlans();
+    </script>
+</body>
+</html>
