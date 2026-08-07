@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация - VPN Shop</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <a href="/" class="nav-logo">
+                    <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M16 2L4 8V24L16 30L28 24V8L16 2Z" stroke="currentColor" stroke-width="2" fill="none"/>
+                        <path d="M16 6L8 10V22L16 26L24 22V10L16 6Z" fill="currentColor" opacity="0.3"/>
+                        <path d="M12 14L16 18L20 14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M16 18V24" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                    VPN Shop
+                </a>
+                
+                <ul class="nav-links">
+                    <li><a href="/" class="nav-link">Главная</a></li>
+                    <li><a href="#pricing" class="nav-link">Тарифы</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Registration Form -->
+    <section class="section">
+        <div class="container" style="max-width: 450px;">
+            <div class="card">
+                <div class="card-header text-center">
+                    <h2 class="card-title" style="margin: 0;">Создать аккаунт</h2>
+                    <p class="text-muted" style="margin-top: 0.5rem;">Заполните форму для регистрации</p>
+                </div>
+                
+                <div class="card-body">
+                    <form id="registerForm">
+                        <div class="form-group">
+                            <label for="email" class="form-label">Email *</label>
+                            <input type="email" id="email" name="email" class="form-input" placeholder="you@example.com" required>
+                        </div>
+                        
+                        <div class="grid grid-2" style="gap: 1rem;">
+                            <div class="form-group" style="margin: 0;">
+                                <label for="firstName" class="form-label">Имя</label>
+                                <input type="text" id="firstName" name="first_name" class="form-input" placeholder="Иван">
+                            </div>
+                            
+                            <div class="form-group" style="margin: 0;">
+                                <label for="lastName" class="form-label">Фамилия</label>
+                                <input type="text" id="lastName" name="last_name" class="form-input" placeholder="Иванов">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="password" class="form-label">Пароль *</label>
+                            <input type="password" id="password" name="password" class="form-input" placeholder="••••••••" minlength="8" required>
+                            <p class="form-hint">Минимум 8 символов</p>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="passwordConfirm" class="form-label">Подтверждение пароля *</label>
+                            <input type="password" id="passwordConfirm" name="password_confirm" class="form-input" placeholder="••••••••" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label style="display: flex; align-items: flex-start; gap: 0.5rem; cursor: pointer;">
+                                <input type="checkbox" name="terms" required>
+                                <span style="font-size: 0.875rem; color: var(--color-text-light);">
+                                    Я согласен с <a href="#">условиями использования</a> и <a href="#">политикой конфиденциальности</a>
+                                </span>
+                            </label>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary btn-block btn-lg">
+                            Зарегистрироваться
+                        </button>
+                    </form>
+                    
+                    <div id="errorContainer" class="alert alert-error hidden" style="margin-top: 1rem;"></div>
+                </div>
+                
+                <div class="card-footer text-center">
+                    <p class="text-muted" style="margin: 0;">
+                        Уже есть аккаунт? <a href="/login">Войти</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer" style="margin-top: auto;">
+        <div class="container">
+            <div class="footer-bottom">
+                <p>&copy; 2024 VPN Shop. Все права защищены.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/static/js/app.js"></script>
+    <script>
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const submitBtn = e.target.querySelector('[type="submit"]');
+            const errorContainer = document.getElementById('errorContainer');
+            
+            UI.setButtonLoading(submitBtn, true);
+            errorContainer.classList.add('hidden');
+            
+            try {
+                const formData = new FormData(e.target);
+                const password = formData.get('password');
+                const passwordConfirm = formData.get('password_confirm');
+                
+                if (password !== passwordConfirm) {
+                    throw new Error('Пароли не совпадают');
+                }
+                
+                const data = {
+                    email: formData.get('email'),
+                    password: password,
+                    first_name: formData.get('first_name') || '',
+                    last_name: formData.get('last_name') || ''
+                };
+                
+                await Auth.register(data);
+                
+                UI.showNotification('Аккаунт успешно создан!', 'success');
+                window.location.href = '/dashboard';
+            } catch (error) {
+                errorContainer.textContent = error.message;
+                errorContainer.classList.remove('hidden');
+            } finally {
+                UI.setButtonLoading(submitBtn, false);
+            }
+        });
+    </script>
+</body>
+</html>
